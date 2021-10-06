@@ -33,10 +33,14 @@ public class S1C1 {
 		final int LOW_6_BITS = 0x3f;
 
 		int i;
-		for (i = 0; i + 3 <= bytes.length; i += 3) {
+		for (i = 0; i < bytes.length; i++) {
 			byte a = bytes[i];
-			byte b = bytes[i + 1];
-			byte c = bytes[i + 2];
+			i++;
+			boolean hasTwoExtraBytes = i < bytes.length;
+			byte b = hasTwoExtraBytes ? bytes[i] : 0;
+			i++;
+			boolean hasThreeExtraBytes = i < bytes.length;
+			byte c = hasThreeExtraBytes ? bytes[i] : 0;
 
 			int w = a >>> 2;
 			int x = (a << 4) | (b >>> 4);
@@ -45,25 +49,10 @@ public class S1C1 {
 
 			chunks.append(BASE64_CHARS[w & LOW_6_BITS]);
 			chunks.append(BASE64_CHARS[x & LOW_6_BITS]);
-			chunks.append(BASE64_CHARS[y & LOW_6_BITS]);
-			chunks.append(BASE64_CHARS[z & LOW_6_BITS]);
-		}
-
-		if (i < bytes.length) {
-			byte a = bytes[i];
-			i++;
-			boolean hasTwoExtraBytes = i < bytes.length;
-			byte b = hasTwoExtraBytes ? bytes[i] : 0;
-			byte c = 0;
-
-			int w = a >>> 2;
-			int x = (a << 4) | (b >>> 4);
-			int y = b << 2;
-
-			chunks.append(BASE64_CHARS[w & LOW_6_BITS]);
-			chunks.append(BASE64_CHARS[x & LOW_6_BITS]);
 			if (hasTwoExtraBytes)
 				chunks.append(BASE64_CHARS[y & LOW_6_BITS]);
+			if (hasThreeExtraBytes)
+				chunks.append(BASE64_CHARS[z & LOW_6_BITS]);
 		}
 
 		for (int pad = (3 - bytes.length % 3 ) % 3; pad > 0; pad--)
