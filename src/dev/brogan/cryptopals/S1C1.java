@@ -1,8 +1,10 @@
 package dev.brogan.cryptopals;
 
 public class S1C1 {
+	private static final char[] BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+
 	public static String convertHexToBase64(String hex) {
-		return null;
+		return convertBytesToBase64(convertHexToBytes(hex));
 	}
 
 	public static byte[] convertHexToBytes(String hex) {
@@ -27,6 +29,46 @@ public class S1C1 {
 	}
 
 	public static String convertBytesToBase64(byte[] bytes) {
-		return null;
+		StringBuilder chunks = new StringBuilder();
+		final int LOW_6_BITS = 0x3f;
+
+		int i;
+		for (i = 0; i + 3 <= bytes.length; i += 3) {
+			byte a = bytes[i];
+			byte b = bytes[i + 1];
+			byte c = bytes[i + 2];
+
+			int w = a >>> 2;
+			int x = (a << 4) | (b >>> 4);
+			int y = (b << 2) | (c >>> 6);
+			int z = c;
+
+			chunks.append(BASE64_CHARS[w & LOW_6_BITS]);
+			chunks.append(BASE64_CHARS[x & LOW_6_BITS]);
+			chunks.append(BASE64_CHARS[y & LOW_6_BITS]);
+			chunks.append(BASE64_CHARS[z & LOW_6_BITS]);
+		}
+
+		if (i < bytes.length) {
+			byte a = bytes[i];
+			i++;
+			boolean hasTwoExtraBytes = i < bytes.length;
+			byte b = hasTwoExtraBytes ? bytes[i] : 0;
+			byte c = 0;
+
+			int w = a >>> 2;
+			int x = (a << 4) | (b >>> 4);
+			int y = b << 2;
+
+			chunks.append(BASE64_CHARS[w & LOW_6_BITS]);
+			chunks.append(BASE64_CHARS[x & LOW_6_BITS]);
+			if (hasTwoExtraBytes)
+				chunks.append(BASE64_CHARS[y & LOW_6_BITS]);
+		}
+
+		for (int pad = (3 - bytes.length % 3 ) % 3; pad > 0; pad--)
+			chunks.append('=');
+
+		return chunks.toString();
 	}
 }

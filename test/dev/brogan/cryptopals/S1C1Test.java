@@ -36,6 +36,8 @@ class S1C1Test {
 
 	@Test
 	void convertsBytesToBase64() {
-		assert false;
+		byte[] bytes = {0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x70, 0x61, 0x6c, 0x73};
+		String base64 = "Q3J5cHRvcGFscw==";
+		assertEquals(base64, S1C1.convertBytesToBase64(bytes));
 	}
 }
