@@ -35,7 +35,17 @@ public class S1C3 {
 	};
 
 	public static String decrypt(String hex) {
-		return "";
+		byte[] ciphertext = S1C1.convertHexToBytes(hex);
+		byte key = findKey(ciphertext);
+		byte[] plaintext = singleByteXor(ciphertext, key);
+		return convertBytesToText(plaintext);
+	}
+
+	private static String convertBytesToText(byte[] bytes) {
+		char[] chars = new char[bytes.length];
+		for (int i = 0; i < bytes.length; i++)
+			chars[i] = (char) bytes[i];
+		return String.valueOf(chars);
 	}
 
 	public static byte[] singleByteXor(byte[] bytes, byte key) {
@@ -45,15 +55,19 @@ public class S1C3 {
 		return S1C2.xor(bytes, mask);
 	}
 
-	public static double rank(String text) {
-		char[] chars = text.toLowerCase().toCharArray();
+	public static double rank(byte[] text) {
 		int[] frequencies = new int[LETTER_FREQUENCIES.length];
 		int totalLetters = 0;
-		for (char c : chars)
-			if (c >= 'a' && c <= 'z') {
-				frequencies[c - 'a']++;
+		for (byte b : text) {
+			if (b >= 'a' && b <= 'z') {
+				frequencies[b - 'a']++;
 				totalLetters++;
 			}
+			if (b >= 'A' && b <= 'Z') {
+				frequencies[b - 'A']++;
+				totalLetters++;
+			}
+		}
 		double totalError = 0;
 		for (int i = 0; i < frequencies.length; i++) {
 			double error = (double) frequencies[i] / totalLetters - LETTER_FREQUENCIES[i];
@@ -62,8 +76,13 @@ public class S1C3 {
 		return -totalError;
 	}
 
-	public static String decrypt(byte[] ciphertext, byte key) {
-		return S1C2.convertBytesToHex(S1C3.singleByteXor(ciphertext, key));
+	public static double rank(String text) {
+		return rank(convertTextToBytes(text));
+
+	}
+
+	public static byte[] decrypt(byte[] ciphertext, byte key) {
+		return S1C3.singleByteXor(ciphertext, key);
 	}
 
 	public static byte[] convertTextToBytes(String text) {
@@ -78,14 +97,12 @@ public class S1C3 {
 		double bestRank = 1;
 		byte bestKey = 0;
 		for (int candidateKey = 0; candidateKey <= 256; candidateKey++) {
-			String plaintext = decrypt(ciphertext, (byte) candidateKey);
-			//wrong type??? byte[] byte[] byte[]
+			byte[] plaintext = decrypt(ciphertext, (byte) candidateKey);
 			double rank = rank(plaintext);
 			if (bestRank == 1 || rank > bestRank) {
 				bestRank = rank;
 				bestKey = (byte) candidateKey;
 			}
-				// decrypot with key. convert to text. rank. save max rank key.
 		}
 		return bestKey;
 	}

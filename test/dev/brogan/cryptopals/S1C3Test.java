@@ -13,7 +13,7 @@ class S1C3Test {
 	void decrypts() {
 		String plaintext = S1C3.decrypt(CIPHERTEXT);
 		for (int b = 0; b <= 256; b++) {
-			String candidate = S1C3.decrypt(S1C1.convertHexToBytes(CIPHERTEXT), (byte) b);
+			byte[] candidate = S1C3.decrypt(S1C1.convertHexToBytes(CIPHERTEXT), (byte) b);
 			assertTrue(S1C3.rank(plaintext) >= S1C3.rank(candidate));
 		}
 	}
