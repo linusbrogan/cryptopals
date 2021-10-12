@@ -68,6 +68,8 @@ public class S1C3 {
 				totalLetters++;
 			}
 		}
+		if (totalLetters == 0)
+			return Double.MIN_VALUE;
 		double totalError = 0;
 		for (int i = 0; i < frequencies.length; i++) {
 			double error = (double) frequencies[i] / totalLetters - LETTER_FREQUENCIES[i];
@@ -99,9 +101,11 @@ public class S1C3 {
 		for (int candidateKey = 0; candidateKey <= 256; candidateKey++) {
 			byte[] plaintext = decrypt(ciphertext, (byte) candidateKey);
 			double rank = rank(plaintext);
+			System.out.printf("rank: %f, byte: %b=%c\n", rank, candidateKey, (char) candidateKey);
 			if (bestRank == 1 || rank > bestRank) {
 				bestRank = rank;
 				bestKey = (byte) candidateKey;
+				System.out.println("BEST");
 			}
 		}
 		return bestKey;
