@@ -4,6 +4,8 @@ import javax.naming.LimitExceededException;
 import java.util.Locale;
 
 public class S1C3 {
+	private static final String CIPHERTEXT = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+
 	// Letter frequencies of English text A-Z from <https://en.wikipedia.org/wiki/Letter_frequency>.
 	private static double[] LETTER_FREQUENCIES = {
 		0.082,
@@ -105,13 +107,16 @@ public class S1C3 {
 		for (int candidateKey = 0; candidateKey <= 256; candidateKey++) {
 			byte[] plaintext = decrypt(ciphertext, (byte) candidateKey);
 			double rank = rank(plaintext);
-			System.out.printf("rank: %f, byte: %d=%c :: %s\n", rank, candidateKey, (char) candidateKey, convertBytesToText(plaintext));
 			if (bestRank == 1 || rank > bestRank) {
 				bestRank = rank;
 				bestKey = (byte) candidateKey;
-				System.out.println("BEST");
 			}
+			System.out.printf("byte b=%d ; best=%b ; %s\n", (byte) candidateKey, bestRank == rank, convertBytesToText(plaintext));
 		}
 		return bestKey;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(decrypt(CIPHERTEXT));
 	}
 }
