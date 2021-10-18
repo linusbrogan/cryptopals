@@ -41,7 +41,7 @@ public class S1C3 {
 		return convertBytesToText(plaintext);
 	}
 
-	private static String convertBytesToText(byte[] bytes) {
+	public static String convertBytesToText(byte[] bytes) {
 		char[] chars = new char[bytes.length];
 		for (int i = 0; i < bytes.length; i++)
 			chars[i] = (char) bytes[i];
@@ -58,6 +58,7 @@ public class S1C3 {
 	public static double rank(byte[] text) {
 		int[] frequencies = new int[LETTER_FREQUENCIES.length];
 		int totalLetters = 0;
+		int badSymbols = 1;
 		for (byte b : text) {
 			if (b >= 'a' && b <= 'z') {
 				frequencies[b - 'a']++;
@@ -67,15 +68,18 @@ public class S1C3 {
 				frequencies[b - 'A']++;
 				totalLetters++;
 			}
+			if (b < ' ' || b > '~') {
+				badSymbols++;
+			}
 		}
 		if (totalLetters == 0)
-			return Double.MIN_VALUE;
+			return -Double.MAX_VALUE;
 		double totalError = 0;
 		for (int i = 0; i < frequencies.length; i++) {
 			double error = (double) frequencies[i] / totalLetters - LETTER_FREQUENCIES[i];
 			totalError += error * error;
 		}
-		return -totalError;
+		return -totalError * badSymbols;
 	}
 
 	public static double rank(String text) {
@@ -101,7 +105,7 @@ public class S1C3 {
 		for (int candidateKey = 0; candidateKey <= 256; candidateKey++) {
 			byte[] plaintext = decrypt(ciphertext, (byte) candidateKey);
 			double rank = rank(plaintext);
-			System.out.printf("rank: %f, byte: %b=%c\n", rank, candidateKey, (char) candidateKey);
+			System.out.printf("rank: %f, byte: %d=%c :: %s\n", rank, candidateKey, (char) candidateKey, convertBytesToText(plaintext));
 			if (bestRank == 1 || rank > bestRank) {
 				bestRank = rank;
 				bestKey = (byte) candidateKey;

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class S1C3Test {
 	private static final String CIPHERTEXT = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-	private static final String ENGLISH = "The quick brown fox";
+	private static final String ENGLISH = "The slow brown fox";
 	private static final String NOT_ENGLISH = "Abcd efqqq zzzz";
 
 	@Test
@@ -40,7 +40,15 @@ class S1C3Test {
 	}
 
 	@Test
+	void convertsBytesToText() {
+		byte[] bytes = {'A', 'b', 'c', 'd', ' ', 'e', 'f', 'q', 'q', 'q', ' ', 'z', 'z', 'z', 'z'};
+		assertEquals(NOT_ENGLISH, S1C3.convertBytesToText(bytes));
+
+	}
+
+	@Test
 	void ranks() {
 		assertTrue(S1C3.rank(ENGLISH) > S1C3.rank(NOT_ENGLISH));
 	}
+
 }
